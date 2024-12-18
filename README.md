@@ -57,7 +57,7 @@ MyTechPC is an e-commerce website that allows users to buy PC parts or fully bui
 
 - Create a MySQL database for the project.
 
-- Import the provided database.sql file into your database.
+- Import the _**pcstore.sql**_ file into your database.
 
 - Update Configuration
 
