@@ -77,7 +77,7 @@ Edit the database connection details in the PHP _Connection_ file:
 Launch your local server and access the website in your browser:
 http://localhost/MyTechPC
 
-How to Use
+**How to Use**
 
 Sign Up: Create an account to start shopping.
 
