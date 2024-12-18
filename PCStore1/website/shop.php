@@ -24,20 +24,15 @@ session_start();
         justify-content: flex-end;
         background: #e3e6f3;
         padding: 10px;
+        flex-wrap: wrap; /* Ensure wrapping on smaller screens */
     }
 
-    #category-filter {
+    #category-filter, #search {
         padding: 6px;
         margin-right: 10px;
         border: none;
         border-radius: 4px;
-    }
-
-    #search {
-        padding: 6px;
-        margin-right: 10px;
-        border: none;
-        border-radius: 4px;
+        flex: 1 1 200px; /* Responsive sizing */
     }
 
     #search-btn {
@@ -48,8 +43,10 @@ session_start();
         color: white;
         border-radius: 1rem;
         cursor: pointer;
+        flex: 1 1 100px; /* Responsive sizing */
     }
-        /* Container for the cards */
+
+    /* Container for the cards */
     .pro-container {
         display: flex;
         flex-wrap: wrap; /* Ensures wrapping of cards */
@@ -92,7 +89,26 @@ session_start();
         font-weight: bold;
     }
 
-    
+    @media (max-width: 799px) {
+        .pro {
+            flex: 1 1 calc(45% - 20px); /* Responsive sizing: 2 cards per row */
+        }
+
+        .search-container {
+            justify-content: center; /* Center search container on smaller screens */
+        }
+
+        #category-filter, #search, #search-btn {
+            flex: 1 1 100%; /* Full width on smaller screens */
+            margin-bottom: 10px; /* Add spacing between elements */
+        }
+    }
+
+    @media (max-width: 499px) {
+        .pro {
+            flex: 1 1 calc(100% - 20px); /* Responsive sizing: 1 card per row */
+        }
+    }
     </style>
 
  
@@ -142,19 +158,19 @@ session_start();
             <input type="text" id="search" name="search">
             <label for="category-filter">Category:</label>
             <select id="category-filter" name="cat">
-                <option value="all">All</option>
-                <option value="set">Pre-Built</option>
-                <option value="keyboard">Keyboard</option>
-                <option value="mouse">Mouse</option>
-                <option value="headset">Headset</option>
-                <option value="motherboard">Motherboard</option>
-                <option value="chassis">Chassis</option>
-                <option value="Powersupply">Power Supply</option>
-                <option value="coolingfan">Cooling Fan</option>
-                <option value="cpu">CPU</option>
-                <option value="gpu">GPU</option>
-                <option value="ram">RAM</option>
-            </select>
+                    <option value="all">All</option>
+                    <option value="set">Pre-Built</option>
+                    <option value="keyboard">Keyboard</option>
+                    <option value="mouse">Mouse</option>
+                    <option value="headset">Headset</option>
+                    <option value="motherboard">Motherboard</option>
+                    <option value="chassis">Chassis</option>
+                    <option value="Powersupply">Power Supply</option>
+                    <option value="coolingfan">Cooling Fan</option>
+                    <option value="cpu">CPU</option>
+                    <option value="gpu">GPU</option>
+                    <option value="ram">RAM</option>
+                </select>
             <button type="submit" id="search-btn" name="search1">Search</button>
         </form>
     </div>
@@ -167,19 +183,18 @@ function displayProductCard($pid, $pname, $brand, $price, $img)
 {
     $shortName = (strlen($pname) > 35) ? substr($pname, 0, 35) . '...' : $pname;
 
-    echo "<div class='w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>";
-    echo "<a href='#'><img class='p-8 rounded-t-lg' src='product_images/$img' alt='$shortName' onclick=\"topage('$pid')\"/></a>";
-    echo "<div class='px-5 pb-5'>";
-    echo "<a href='#'><h5 class='text-xl font-semibold tracking-tight text-gray-900 dark:text-white'>$brand - $shortName</h5></a>";
-    echo "<div class='flex items-center mt-2.5 mb-5'>";
+    echo "<div class='pro bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col'>";
+    echo "<a href='#'><img class='w-full h-40 object-cover rounded-t-lg' src='product_images/$img' alt='$shortName' onclick=\"topage('$pid')\"/></a>";
+    echo "<div class='px-3 pb-3 flex-grow'>";
+    echo "<a href='#'><h5 class='text-md font-semibold tracking-tight text-gray-900 dark:text-white'>$brand - $shortName</h5></a>";
+    echo "<div class='flex items-center mt-1 mb-3'>";
     echo "<div class='flex items-center space-x-1 rtl:space-x-reverse'>";
 
     echo "</div>";
-    //echo "<span class='bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ms-3'></span>";
     echo "</div>";
-    echo "<div class='flex items-center justify-between mt-5'>";
-    echo "<span class='text-3xl font-bold text-gray-900 dark:text-white'>₱$price</span>";
-    echo "<a href='#' class='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800' onclick=\"topage('$pid')\">View</a>";
+    echo "<div class='flex items-center justify-between mt-3'>";
+    echo "<span class='text-xl font-bold text-gray-900 dark:text-white'>₱$price</span>";
+    echo "<a href='#' class='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800' onclick=\"topage('$pid')\">View</a>";
     echo "</div>";
     echo "</div>";
     echo "</div>";
@@ -216,17 +231,8 @@ if ($result) {
         $price = $row['price'];
         $img = $row['img'];
 
-        // Fetch average rating
-        $query2 = "SELECT AVG(rating) AS average_rating FROM reviews WHERE pid = $pid";
-        $result2 = mysqli_query($con, $query2);
-        $stars = 0;
-
-        if ($row2 = mysqli_fetch_assoc($result2)) {
-            $stars = round($row2['average_rating'], 0);
-        }
-
         // Display Product Card
-        displayProductCard($pid, $pname, $brand, $price, $img, $stars);
+        displayProductCard($pid, $pname, $brand, $price, $img);
     }
     echo "</div></section>";
 }
