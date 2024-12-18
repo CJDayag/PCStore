@@ -4,12 +4,19 @@ MyTechPC is an e-commerce website that allows users to buy PC parts or fully bui
 Features
 User Features
 🛒 Cart: Add and manage products in your cart for easy checkout.
+
 🖥️ Products Menu: Browse a wide selection of PC parts and desktops.
+
 👤 Profile: View and edit your personal details.
+
 🔐 Login and Signup: Secure account creation and access.
+
 💳 Checkout: Complete your purchase (currently supports Cash on Delivery only).
+
 ✏️ Edit Profile: Update your user information anytime.
+
 Admin Features
+
 ⚙️ Admin Panel: Manage products, view orders, and oversee website operations.
 
 Technologies Used
