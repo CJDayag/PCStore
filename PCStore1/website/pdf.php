@@ -2,7 +2,7 @@
 require('FPDF-1.8.6/fpdf.php');
 
 $con = mysqli_connect('localhost', 'root', '');
-mysqli_select_db($con, 'pcstore');
+mysqli_select_db($con, 'pcstore1');
 
 // Check if $_GET['aid'] is set
 if (isset($_GET['oid'])) {
