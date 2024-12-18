@@ -1,11 +1,13 @@
-#MyTechPC
+# MyTechPC
 
 MyTechPC is an e-commerce website that allows users to buy PC parts or fully built desktops online. The platform provides a seamless shopping experience with essential features for both users and administrators.
 
 ---
 
-Features
-User Features
+# Features
+
+## User Features
+
 🛒 Cart: Add and manage products in your cart for easy checkout.
 
 🖥️ Products Menu: Browse a wide selection of PC parts and desktops.
@@ -24,7 +26,7 @@ Admin Features
 
 ---
 
-**Technologies Used:**
+## Technologies Used:
 
 **HTML:** For the website structure and content.
 
@@ -37,7 +39,7 @@ Admin Features
 
 ---
 
-Installation Instructions
+## Installation Instructions
 
 Clone the Repository
 
@@ -70,7 +72,7 @@ Edit the database connection details in the PHP _Connection_ file:
 
 ---
 
-Start the Server
+## Start the Server
 
 Launch your local server and access the website in your browser:
 http://localhost/MyTechPC
@@ -92,7 +94,7 @@ Admin Access: Log in as an admin to manage the website.
 
 ---
 
-Future Improvements
+## Future Improvements
 
 Online payment gateway integration.
 
