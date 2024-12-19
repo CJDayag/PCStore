@@ -21,7 +21,7 @@ if (empty($_SESSION['aid']))
 
 </head>
 
-<body>
+<body class="bg-[#f8f7f4]">
     <section id="header">
         <a href="index.php"><img src="img/lg.png" class="logo" /></a>
 

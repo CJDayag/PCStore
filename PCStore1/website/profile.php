@@ -1,12 +1,10 @@
 <?php
 session_start();
 
-
 if (isset($_GET['lo'])) {
   $_SESSION['aid'] = -1;
   header("Location: index.php");
   exit();
-
 }
 
 if (isset($_POST['submit'])) {
@@ -43,7 +41,6 @@ if (isset($_POST['submit'])) {
   exit();
 }
 
-
 if (isset($_POST['abc'])) {
   include("include/connect.php");
 
@@ -57,7 +54,6 @@ if (isset($_POST['abc'])) {
 
     $pid = $row['pid'];
 
-
     $text = $_POST["$pid-te"];
     $star = $_POST["$pid-rating"];
     $query;
@@ -65,7 +61,6 @@ if (isset($_POST['abc'])) {
       $query = "insert into `reviews` (oid, pid, rtext, rating) values ($oid, $pid, NULL, $star)";
     else
       $query = "insert into `reviews` (oid, pid, rtext, rating) values ($oid, $pid, '$text', $star)";
-
 
     $result2 = mysqli_query($con, $query);
   }
@@ -78,6 +73,30 @@ if (isset($_GET['c'])) {
   header("Location: profile.php");
   exit();
 }
+
+// Get user info early
+$afname = '';
+$alname = '';
+$email = '';
+$phone = '';
+$dob = '';
+$user = '';
+$gender = '';
+
+if($_SESSION['aid'] > 0) {
+  include("include/connect.php");
+  $aid = $_SESSION['aid'];
+  $query = "SELECT * FROM ACCOUNTS WHERE aid = $aid";
+  $result = mysqli_query($con, $query);
+  $row = mysqli_fetch_assoc($result);
+  $afname = $row['afname'];
+  $alname = $row['alname'];
+  $email = $row['email'];
+  $phone = $row['phone'];
+  $dob = $row['dob'];
+  $user = $row['username'];
+  $gender = $row['gender'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -89,120 +108,12 @@ if (isset($_GET['c'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyTechPC</title>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css" />
-
-    <style>
-    .tb {
-        max-height: 700px;
-        overflow-x: auto;
-        overflow-y: auto;
-    }
-
-
-
-    .tb tr {
-        height: 60px;
-        margin: 20px;
-    }
-
-    .tb td {
-        text-align: center;
-        margin: 10px;
-        padding-left: 40px;
-        padding-right: 40px;
-    }
-
-    .insert-btn {
-        display: inline-block;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 5px;
-        border: none;
-        color: #fff;
-        background-color: #088178;
-        cursor: pointer;
-        margin-right: 20px;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        margin-left: 20px;
-    }
-
-    input[type="text"] {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 20px;
-        font-size: 16px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-
-    input[type="date"] {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 20px;
-        font-size: 16px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-
-    .logup {
-        width: auto;
-    }
-    </style>
-
-    <style>
-    .rating {
-        display: inline-block;
-        font-size: 0;
-        line-height: 0;
-        border: none;
-        border-style: none;
-
-        padding-left: 80px;
-    }
-
-    .rating label {
-        display: inline-block;
-        font-size: 24px;
-        color: #ddd;
-        cursor: pointer;
-    }
-
-    .rating label:before {
-        content: '\2606';
-    }
-
-    .rating label.checked:before,
-    .rating label:hover:before {
-        content: '\2605';
-        color: #ffc107;
-    }
-
-    input[type="radio"] {
-        display: none;
-    }
-
-    /* .asd {} */
-    </style>
-
-    <style>
-    </style>
-    <script>
-    window.addEventListener("unload", function() {
-        // Call a PHP script to log out the user
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "logout.php", false);
-        xhr.send();
-    });
-    </script>
-
 </head>
 
-<body>
+<body class="bg-[#f8f7f4]">
+
     <section id="header">
         <a href="index.php"><img src="img/lg.png" class="logo" alt="" /></a>
 
@@ -213,16 +124,13 @@ if (isset($_GET['c'])) {
                 <li><a href="contact.php">Contact</a></li>
 
                 <?php
-
-        if ($_SESSION['aid'] < 0) {
-          echo "   <li><a href='login.php'>login</a></li>
-            <li><a  href='signup.php'>SignUp</a></li>
-            ";
-        } else {
-          echo "   <li><a class='active'  href='profile.php'>My Profile</a></li>
-          ";
-        }
-        ?>
+                if ($_SESSION['aid'] < 0) {
+                  echo "<li><a href='login.php'>login</a></li>
+                        <li><a href='signup.php'>SignUp</a></li>";
+                } else {
+                  echo "<li><a class='active' href='profile.php'>My Profile</a></li>";
+                }
+                ?>
                 <li id="lg-bag">
                     <a href="cart.php"><i class="far fa-shopping-bag"></i></a>
                 </li>
@@ -235,406 +143,231 @@ if (isset($_GET['c'])) {
         </div>
     </section>
 
-    <div class="navbar-top">
-        <div class="title">
-            <h1>Profile</h1>
+    <?php if($_SESSION['aid'] > 0): ?>
+    <style>
+        @keyframes slideIn {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        #welcome-banner {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        #welcome-banner.fade-out {
+            animation: fadeOut 0.5s ease-in forwards;
+        }
+    </style>
+    <div id="welcome-banner" class="fixed top-0 right-4 z-50 bg-white shadow-lg rounded-lg p-4 max-w-xl mt-20">
+        <div class="flex items-center justify-between">
+            <p class="text-gray-800 font-semibold">Welcome back, <?php echo $afname; ?>!</p>
+            <button onclick="closeWelcomeBanner()" class="text-gray-500 hover:text-gray-700 transition-colors duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
         </div>
-        <!-- End -->
     </div>
-    <!-- End -->
+    <?php endif; ?>
 
-    <!-- Sidenav -->
-    <div class="sidenav">
-        <div class="profile">
-
-            <?php
-
-      include("include/connect.php");
-
-      $aid = $_SESSION['aid'];
-      $query = "SELECT * FROM ACCOUNTS WHERE aid = $aid";
-
-      $result = mysqli_query($con, $query);
-
-      $row = mysqli_fetch_assoc($result);
-
-      $afname = $row['afname'];
-      $alname = $row['alname'];
-      $phone = $row['phone'];
-      $email = $row['email'];
-      $dob = $row['dob'];
-      $user = $row['username'];
-      $gender = $row['gender'];
-      $name = $afname . " " . $alname;
-
-      echo "
-      <div class='name'>
-        $name
-      </div>
-      <div class='job'>
-        Customer
-      </div>
-    </div>
-    "
-        ?>
-
-            <div class="sidenav-url">
-                <div class="url">
-                    <a href='profile.php?lo=1' class="btn logup">Log out</a>
-                    <hr allign="center">
-                </div>
-                <div class="url">
-                    <a href='profile.php?upd=1' class="btn logup">Update</a>
-                    <hr allign="center">
-                </div>
-                <?php
-        if (isset($_GET['odd'])) {
-          echo "
-                    <div class='url'>
-                    <a href='profile.php' class='btn logup'>Back</a>
-                    <hr allign='center'>
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Sidebar -->
+            <div class="md:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="text-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800"><?php echo $afname . " " . $alname; ?></h2>
+                        <p class="text-gray-600">Customer</p>
                     </div>
-                    ";
-        }
-        ?>
-            </div>
-        </div>
-        <!-- End -->
-
-        <!-- Main -->
-        <div class="main">
-            <h2>IDENTITY</h2>
-            <div class="card">
-                <div class="card-body">
-                    <i class="fa fa-pen fa-xs edit"></i>
-                    <table>
-                        <tbody>
-                            <?php
-
-
-              if (isset($_GET['upd'])) {
-                include("include/connect.php");
-
-                $aid = $_SESSION['aid'];
-
-                $query = "SELECT * FROM ACCOUNTS WHERE aid = $aid";
-
-                $result = mysqli_query($con, $query);
-
-                $row = mysqli_fetch_assoc($result);
-
-                $afname = $row['afname'];
-                $alname = $row['alname'];
-                $phone = $row['phone'];
-                $email = $row['email'];
-                $dob = $row['dob'];
-                $user = $row['username'];
-                $gender = $row['gender'];
-
-                echo "
-              <form class='form1' method='post'>
-              <tr>
-                <td>First Name</td>
-                <td>:</td>
-                <td><input name='a1' type='text' value='$afname'></td>
-              </tr>
-              <tr>
-                <td>Last Name</td>
-                <td>:</td>
-                <td><input name='a2' type='text' value='$alname'></td>
-              </tr>
-              <tr>
-                <td>Email</td>
-                <td>:</td>
-                <td><input name='a3' type='text' value='$email'></td>
-              </tr>
-              <tr>
-              <td>Phone</td>
-              <td>:</td>
-              <td><input name='a4' type='text' value='$phone'></td>
-              </tr>
-              <tr>
-              <td>Date OF Birth</td>
-              <td>:</td>
-              <td><input name='a5' type='date' value='$dob'></td>
-              </tr>
-
-              <tr>
-              <td><button name='submit' type='submit' class='btn' style='width: 50%;'>Submit</button></td>
-
-              </tr>
-              </form>
-              ";
-
-
-
-              } else {
-                include("include/connect.php");
-
-                $aid = $_SESSION['aid'];
-                $query = "SELECT * FROM ACCOUNTS WHERE aid = $aid";
-
-                $result = mysqli_query($con, $query);
-
-                $row = mysqli_fetch_assoc($result);
-
-                $afname = $row['afname'];
-                $alname = $row['alname'];
-                $phone = $row['phone'];
-                $email = $row['email'];
-                $dob = $row['dob'];
-                $user = $row['username'];
-                $gender = $row['gender'];
-                $name = $afname . " " . $alname;
-
-                echo "
-              <tr>
-                <td>First Name</td>
-                <td>:</td>
-                <td>$afname</td>
-              </tr>
-              <tr>
-                <td>Last Name</td>
-                <td>:</td>
-                <td>$alname</td>
-              </tr>
-              <tr>
-                <td>Email</td>
-                <td>:</td>
-                <td>$email</td>
-              </tr>
-              <tr>
-              <td>Phone</td>
-              <td>:</td>
-              <td>$phone</td>
-              </tr>
-              <tr>
-              <td>Date OF Birth</td>
-              <td>:</td>
-              <td>$dob</td>
-              </tr>
-              <tr>
-              <td>Username</td>
-              <td>:</td>
-              <td>$user</td>
-              </tr>
-              <tr>
-              <td>Gender</td>
-              <td>:</td>
-              <td>$gender</td>
-              </tr>
-              ";
-              }
-              ?>
-                        </tbody>
-                    </table>
+                    <div class="space-y-4">
+                        <a href="profile.php?lo=1" class="block w-full text-center bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition duration-200">
+                            Log out
+                        </a>
+                        <a href="profile.php?upd=1" class="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition duration-200">
+                            Update Profile
+                        </a>
+                        <?php if (isset($_GET['odd'])): ?>
+                        <a href="profile.php" class="block w-full text-center bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition duration-200">
+                            Back
+                        </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
 
-            <?php
+            <!-- Main Content -->
+            <div class="md:col-span-3">
+                <!-- Profile Information -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6">Profile Information</h2>
+                    <?php if (isset($_GET['upd'])): ?>
+                    <form method="post" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-gray-700 mb-2">First Name</label>
+                                <input type="text" name="a1" value="<?php echo $afname; ?>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Last Name</label>
+                                <input type="text" name="a2" value="<?php echo $alname; ?>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Email</label>
+                                <input type="email" name="a3" value="<?php echo $email; ?>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Phone</label>
+                                <input type="text" name="a4" value="<?php echo $phone; ?>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Date of Birth</label>
+                                <input type="date" name="a5" value="<?php echo $dob; ?>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+                        <button type="submit" name="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition duration-200">
+                            Save Changes
+                        </button>
+                    </form>
+                    <?php else: ?>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-gray-600">First Name</p>
+                            <p class="font-semibold"><?php echo $afname; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Last Name</p>
+                            <p class="font-semibold"><?php echo $alname; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Email</p>
+                            <p class="font-semibold"><?php echo $email; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Phone</p>
+                            <p class="font-semibold"><?php echo $phone; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Date of Birth</p>
+                            <p class="font-semibold"><?php echo $dob; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Username</p>
+                            <p class="font-semibold"><?php echo $user; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Gender</p>
+                            <p class="font-semibold"><?php echo $gender; ?></p>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
 
-      if (isset($_GET['odd'])) {
-        include("include/connect.php");
-
-        $oid = $_GET['odd'];
-
-        $query = "select * from `order-details` where oid = $oid";
-        $result = mysqli_query($con, $query);
-
-        echo "<h2>Additional Info</h2>
-                  <div class='card'>
-                  <div class='card-body'>
-                      <i class='fa fa-pen fa-xs edit'></i>
-                      <div class='tb' style: 'height: 700px; max-height: 700px;'>
-                      <form method='post'> <table style='display:table; max-height: 700px;' class='tb'><thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Date Ordered</th>
-                  <th>Total</th>
-                  <th>Address</th>
-                  <th>Order Status</th>
-                  <th>Reciept</th>
-                </tr>
-                </thead><tbody>";
-
-        while ($row = mysqli_fetch_assoc($result)) {
-          include("include/connect.php");
-
-          $aid = $_SESSION['aid'];
-
-          $query = "SELECT * FROM orders join accounts on orders.oid = accounts.aid where accounts.aid and orders.oid = $aid";
-
-          $result2 = mysqli_query($con, $query);
-
-          $row2 = mysqli_fetch_assoc($result2);
-
-          $oid = $row2['oid'];
-          $dateod = $row2['dateod'];
-          $total = $row2['total'];
-          $add = $row2['address'];
-          $datedel = $row2['datedel'];
-          
-          
-
-          echo " <tr>
-                    <td>$oid</td>
-                    <td>$dateod</td>
-                    <td>$total</td>
-                    <td>$add</td>
-                    <td>$datedel</td>
-                    <td><div class='sss'><button type='generate' name='' class = 'btn' style='width: 50px;'> Generate </button></div></td>
-                  </tr>";
-        }
-        echo "</tbody></table>
-                </form></tbody>
-                  </table>
-              </div>
-          </div>
-         
-     ";
-      } else {
-        echo "<h2>ORDER INFO</h2>
-                <div class='card'>
-                <div class='card-body'>
-                    <i class='fa fa-pen fa-xs edit'></i>
-                    <div class='tb'>
-                        <table style='display:table;' class='tb'>
+                <!-- Order History -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-6">Order History</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
                             <thead>
-                                <tr>
-                                    <th>Order ID </th>
-                                    <th>Account ID</th>
-                                    <th>Date Ordered </th>
-                                    <th>Order Status</th>
-                                    <th>Total Price </th>
-                                    <th>Address </th>
-                                    <th>Reciept </th>
+                                <tr class="bg-gray-50">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Ordered</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>";
-
-        include("include/connect.php");
-
-        $aid = $_SESSION['aid'];
-
-        $query = "SELECT * FROM orders join accounts on orders.aid = accounts.aid where orders.aid = $aid";
-
-
-        $result = mysqli_query($con, $query);
-
-        while ($row = mysqli_fetch_assoc($result)) {
-          $oid = $row['oid'];
-          $aid = $row['aid'];
-          $dateod = $row['dateod'];
-          $datedel = $row['datedel'];
-          $add = $row['address'];
-          $pri = $row['total'];
-          $tot = $pri + 250;
-          if (empty($datedel))
-            $datedel = "Order pending";
-          echo "
-
-
-                <tr>
-                <td>$oid</td>
-                <td>$aid</td>
-                    <td>$dateod</td>
-                    <td>$datedel</td>
-                    <td>$tot</td>
-                <td style='max-width: 400px; max-height: 100px; overflow-x: auto; overflow-y: auto;'>$add</td>
-                ";
-          echo "<td><a href='pdf.php?oid=$oid'><button class='insert-btn' target='_blank'>Generate</button></a></td>";
-          echo "</tr>";
-        }
-
-        echo "</tbody>
-                  </table>
-              </div>
-          </div>
-      </div>";
-      }
-      ?>
-
-
-
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php
+                                include("include/connect.php");
+                                $aid = $_SESSION['aid'];
+                                $query = "SELECT * FROM orders WHERE aid = $aid ORDER BY dateod DESC";
+                                $result = mysqli_query($con, $query);
+                                
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    $oid = $row['oid'];
+                                    $dateod = $row['dateod'];
+                                    $status = empty($row['datedel']) ? 'Pending' : 'Delivered';
+                                    $total = $row['total'] + 250; // Adding delivery fee
+                                    
+                                    echo "<tr class='hover:bg-gray-50'>
+                                        <td class='px-6 py-4 whitespace-nowrap'>#$oid</td>
+                                        <td class='px-6 py-4 whitespace-nowrap'>$dateod</td>
+                                        <td class='px-6 py-4 whitespace-nowrap'>
+                                            <span class='px-2 inline-flex text-xs leading-5 font-semibold rounded-full " . 
+                                            ($status == 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800') . 
+                                            "'>$status</span>
+                                        </td>
+                                        <td class='px-6 py-4 whitespace-nowrap'>₱$total</td>
+                                        <td class='px-6 py-4 whitespace-nowrap'>
+                                            <a href='pdf.php?oid=$oid' target='_blank' 
+                                               class='text-blue-600 hover:text-blue-900'>
+                                                View Receipt
+                                            </a>
+                                        </td>
+                                    </tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- End -->
+    </div>
 
-        <footer class="section-p1">
-            <div class="col">
-                <img class="logo" src="img/lg.png" />
-                <h4>Contact</h4>
-                <p>
-                    <strong>Email: </strong> mytechpc@gmail.com
+    <footer class="section-p1">
+        <div class="col">
+            <img class="logo" src="img/lg.png" />
+            <h4>Contact</h4>
+            <p>
+                <strong>Email: </strong> mytechpc@gmail.com
+            </p>
+            <p>
+                <strong>Phone: </strong> 09355498379
+            </p>
+            <p>
+                <strong>Hours: </strong> 9am-5pm
+            </p>
+        </div>
 
-                </p>
-                <p>
-                    <strong>Phone: </strong> 09355498379
-                </p>
-                <p>
-                    <strong>Hours: </strong> 9am-5pm
-                </p>
-            </div>
+        <div class="col">
+            <h4>My Account</h4>
+            <a href="cart.php">View Cart</a>
+        </div>
 
-            <div class="col">
-                <h4>My Account</h4>
-                <a href="cart.php">View Cart</a>
-            </div>
+        <div class="copyright">
+            <p>Copyright © 2023 My Tech Pc</p>
+        </div>
+    </footer>
 
-            <div class="copyright">
-                <p>Copyright © 2023 My Tech Pc</p>
-            </div>
-        </footer>
+    <script src="script.js"></script>
+    <script>
+    function closeWelcomeBanner() {
+        const banner = document.getElementById('welcome-banner');
+        banner.style.opacity = '0';
+        setTimeout(() => {
+            banner.style.display = 'none';
+        }, 300);
+    }
 
-        <script src="script.js"></script>
-
-        <script>
-        // Get all the rating fields on the page
-        function bruh(param) {
-            console.log(param);
-            const ratingFields = document.querySelectorAll('#a-' + param + '-rating');
-
-            // Loop through each rating field
-            ratingFields.forEach(ratingField => {
-                // Get all the stars in this rating field
-                const stars = ratingField.querySelectorAll('input[type="radio"]');
-
-                // Loop through each star
-                stars.forEach(star => {
-                    // Listen for click events on this star
-                    star.addEventListener('click', function() {
-                        // Set the clicked star and all the stars before it to be checked and filled
-
-
-                        for (let i = 0; i < star.value; i++) {
-                            console.log('hello');
-                            stars[i].checked = true;
-                            stars[i].nextElementSibling.classList.add('checked');
-                        }
-
-                        // Set all the stars after the clicked star to be unchecked and empty
-                        for (let i = star.value; i < stars.length; i++) {
-                            stars[i].checked = false;
-                            console.log('hello');
-
-                            stars[i].nextElementSibling.classList.remove('checked');
-                        }
-                    });
-                });
-            });
-        }
-        </script>
-
-
-
+    setTimeout(closeWelcomeBanner, 5000);
+    </script>
 </body>
-
 </html>
-
-<script>
-window.addEventListener("unload", function() {
-  // Call a PHP script to log out the user
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", "logout.php", false);
-  xhr.send();
-});
-</script>

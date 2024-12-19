@@ -71,6 +71,7 @@ button.normal:hover {
 }
 
 body {
+  background-color: #faf9f6;
   width: 100%;
 }
 
@@ -80,8 +81,8 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 15px 20px; /* Reduced padding */
-  background-color: #f8f9fa; /* Lighter background */
-  border-bottom: 1px solid #eee; /* Subtle border */
+  background-color: #FCFCF7; /* Lighter background */
+  border-bottom: 1px solid #fbf5; /* Subtle border */
   position: sticky;
   top: 0;
   left: 0;
@@ -566,7 +567,7 @@ footer .copyright {
     right: -300px;
     height: 100vh;
     width: 300px;
-    background-color: #e3e6f3;
+    background-color: #f8f9fa;
     box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
     padding: 80px 0 0 10px;
     transition: 0.3s;
@@ -1026,7 +1027,6 @@ footer .copyright {
 }
 
 #form {
-  background-color: white;
   margin: 0px;
   padding: 30px 20px;
   text-align: center;
@@ -1113,11 +1113,10 @@ div.titlecheck {
 
 #form1 {
   background-color: white;
-  margin-left: 100px;
+  margin-left: 10px;
   padding: 30px;
   text-align: left;
   box-shadow: 1px 1px 4px 1px #e6e6e6;
-  width: 800px;
 }
 
 .btn1 {
@@ -1353,6 +1352,18 @@ hr {
 .fa-snapchat:hover {
   color: #fffb01 !important;
 }
+
+        /* Custom animations */
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-product {
+          animation: fadeIn 0.5s ease-out;
+      }
+      .pagination-btn {
+          @apply transition duration-300 ease-in-out transform hover:scale-105;
+      }
 
 
 /* End */
