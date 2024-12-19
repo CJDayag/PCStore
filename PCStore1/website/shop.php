@@ -10,7 +10,7 @@ session_start();
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyTechPC</title>
+    <title>MyTechPC | Shop</title>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="style.css" />
@@ -22,7 +22,8 @@ session_start();
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        background: #e3e6f3;
+        background: #fcfcf7;
+        border-bottom: 1px solid #222; /* Subtle border */
         padding: 10px;
         flex-wrap: wrap; /* Ensure wrapping on smaller screens */
     }
@@ -39,7 +40,7 @@ session_start();
         outline: none;
         border: none;
         padding: 10px 30px;
-        background-color: navy;
+        background-color: #222;
         color: white;
         border-radius: 1rem;
         cursor: pointer;
@@ -67,7 +68,6 @@ session_start();
         margin: 10px; /* Additional margin */
         padding: 15px; /* Padding for content */
         border-radius: 10px;
-        background-color: #fff; /* White background */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
         overflow: hidden; /* Prevent overflow */
     }
@@ -109,12 +109,13 @@ session_start();
             flex: 1 1 calc(100% - 20px); /* Responsive sizing: 1 card per row */
         }
     }
+    
     </style>
 
  
 </head>
 
-<body>
+<body class="bg-[#faf9f6]">
     <section id="header">
         <a href="index.php"><img src="img/lg.png" class="logo" alt="" /></a>
 
@@ -175,68 +176,109 @@ session_start();
         </form>
     </div>
 
-    <?php
-include("include/connect.php");
+    <div class="container mx-auto px-4 py-6">
+        <?php
+        include("include/connect.php");
 
-// Function to display product cards
-function displayProductCard($pid, $pname, $brand, $price, $img)
-{
-    $shortName = (strlen($pname) > 35) ? substr($pname, 0, 35) . '...' : $pname;
+        // Pagination setup
+        $resultsPerPage = 16;
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $offset = ($page - 1) * $resultsPerPage;
 
-    echo "<div class='pro bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col'>";
-    echo "<a href='#'><img class='w-full h-40 object-cover rounded-t-lg' src='product_images/$img' alt='$shortName' onclick=\"topage('$pid')\"/></a>";
-    echo "<div class='px-3 pb-3 flex-grow'>";
-    echo "<a href='#'><h5 class='text-md font-semibold tracking-tight text-gray-900 dark:text-white'>$brand - $shortName</h5></a>";
-    echo "<div class='flex items-center mt-1 mb-3'>";
-    echo "<div class='flex items-center space-x-1 rtl:space-x-reverse'>";
+        // Search and Filter Logic
+        $query = "SELECT * FROM `products` WHERE qtyavail > 0";
+        $countQuery = "SELECT COUNT(*) as total FROM `products` WHERE qtyavail > 0";
 
-    echo "</div>";
-    echo "</div>";
-    echo "<div class='flex items-center justify-between mt-3'>";
-    echo "<span class='text-xl font-bold text-gray-900 dark:text-white'>₱$price</span>";
-    echo "<a href='#' class='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800' onclick=\"topage('$pid')\">View</a>";
-    echo "</div>";
-    echo "</div>";
-    echo "</div>";
-}
+        if (isset($_POST['search1'])) {
+            $search = $_POST['search'];
+            $category = $_POST['cat'];
 
-// Search Logic
-if (isset($_POST['search1'])) {
-    $search = $_POST['search'];
-    $category = $_POST['cat'];
-    $query = "SELECT pid, pname, brand, price, img FROM `products`";
+            if (!empty($search)) {
+                $query .= " AND (pname LIKE '%$search%' OR brand LIKE '%$search%' OR description LIKE '%$search%')";
+                $countQuery .= " AND (pname LIKE '%$search%' OR brand LIKE '%$search%' OR description LIKE '%$search%')";
+            }
 
-    if (!empty($search)) {
-        $query .= " WHERE (pname LIKE '%$search%' OR brand LIKE '%$search%' OR description LIKE '%$search%')";
-        if ($category != "all") {
-            $query .= " AND category = '$category'";
+            if ($category != "all") {
+                $query .= " AND category = '$category'";
+                $countQuery .= " AND category = '$category'";
+            }
         }
-    } elseif ($category != "all") {
-        $query .= " WHERE category = '$category'";
-    }
 
-    $result = mysqli_query($con, $query);
-} else {
-    // Default display for random products
-    $result = mysqli_query($con, "SELECT pid, pname, brand, price, img FROM `products` WHERE qtyavail > 0 ORDER BY RAND()");
-}
+        // Add pagination to the query
+        $query .= " LIMIT $offset, $resultsPerPage";
 
-if ($result) {
-    echo "<section id='product1' class='section-p1'>";
-    echo "<div class='pro-container'>";
-    while ($row = mysqli_fetch_assoc($result)) {
-        $pid = $row['pid'];
-        $pname = $row['pname'];
-        $brand = $row['brand'];
-        $price = $row['price'];
-        $img = $row['img'];
+        // Get total number of results
+        $totalResult = mysqli_query($con, $countQuery);
+        $totalRow = mysqli_fetch_assoc($totalResult);
+        $totalProducts = $totalRow['total'];
+        $totalPages = ceil($totalProducts / $resultsPerPage);
 
-        // Display Product Card
-        displayProductCard($pid, $pname, $brand, $price, $img);
-    }
-    echo "</div></section>";
-}
-?>
+        // Execute main query
+        $result = mysqli_query($con, $query);
+        ?>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <?php
+            while ($row = mysqli_fetch_assoc($result)) {
+                $pid = $row['pid'];
+                $pname = $row['pname'];
+                $brand = $row['brand'];
+                $price = $row['price'];
+                $img = $row['img'];
+            ?>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 animate-product">
+                    <img 
+                        src="product_images/<?php echo $img; ?>" 
+                        alt="<?php echo $pname; ?>" 
+                        class="w-full h-48 object-cover"
+                        onclick="topage('<?php echo $pid; ?>')"
+                    >
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 truncate"><?php echo $brand . ' - ' . $pname; ?></h3>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-[#222] font-bold">₱<?php echo number_format($price, 2); ?></span>
+                            <button 
+                                onclick="topage('<?php echo $pid; ?>')"  class="px-4 py-2 bg-[#222] text-white rounded-lg hover:bg-gray-700 transition duration-300"
+                            >
+                                View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+
+        <!-- Pagination Section -->
+        <div class="flex justify-center mt-6">
+            <nav aria-label="Page navigation">
+                <ul class="inline-flex -space-x-px">
+                    <?php if ($page > 1): ?>
+                        <li>
+                            <a href="?page=<?php echo $page - 1; ?>" class="pagination-btn px-3 py-2 border border-gray-300 rounded-l-md bg-white text-gray-500 hover:bg-gray-100">
+                                Previous
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li>
+                            <a href="?page=<?php echo $i; ?>" class="pagination-btn px-3 py-2 border border-gray-300 bg-white text-gray-500 hover:bg-gray-100 <?php echo $i === $page ? 'bg-blue-600 text-white' : ''; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $totalPages): ?>
+                        <li>
+                            <a href="?page=<?php echo $page + 1; ?>" class="pagination-btn px-3 py-2 border border-gray-300 rounded-r-md bg-white text-gray-500 hover:bg-gray-100">
+                                Next
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        </div>
+    </div>
 
 
 
