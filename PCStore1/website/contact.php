@@ -8,7 +8,7 @@ session_start();
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyTechPC</title>
+    <title>MyTechPC | Contact</title>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
 
@@ -16,7 +16,7 @@ session_start();
 
 </head>
 
-<body>
+<body class="bg-[#f8f7f4]">
     <section id="header">
         <a href="index.php"><img src="img/lg.png" class="logo" alt="" /></a>
 
