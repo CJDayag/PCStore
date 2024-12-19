@@ -31,32 +31,7 @@ if (isset($_POST['submit'])) {
   }
 
 }
-if (isset($_GET['w'])) {
-  include("include/connect.php");
-  $aid = $_SESSION['aid'];
-  if ($aid < 0) {
-    header("Location: login.php");
-    exit();
-  }
-  $pid = $_GET['w'];
 
-  $query = "INSERT INTO `WISHLIST` (aid, pid) values ($aid, $pid)";
-
-  $result = mysqli_query($con, $query);
-  header("Location: sproduct.php?pid=$pid");
-  exit();
-}
-if (isset($_GET['nw'])) {
-  include("include/connect.php");
-  $aid = $_SESSION['aid'];
-  $pid = $_GET['nw'];
-
-  $query = "DELETE from `WISHLIST` where aid = $aid and pid = $pid";
-
-  $result = mysqli_query($con, $query);
-  header("Location: sproduct.php?pid=$pid");
-  exit();
-}
 
 ?>
 
@@ -68,11 +43,12 @@ if (isset($_GET['nw'])) {
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MyTechPC</title>
+  <title>MyTechPC | Product Details</title>
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
-
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css" />
+  
 
   <style>
     .heart {
@@ -81,40 +57,38 @@ if (isset($_GET['nw'])) {
       justify-content: center;
       align-items: center;
     }
-    .star i {
-  font-size: 12px;
-  color: rgb(243, 181, 25);
-}
 
-.tb {
-        max-height: 400px;
-        overflow-x: auto;
-        overflow-y: auto;
+    .star i {
+      font-size: 12px;
+      color: rgb(243, 181, 25);
     }
 
-
+    .tb {
+      max-height: 400px;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
 
     .tb tr {
-        height: 60px;
-        margin: 10px;
+      height: 60px;
+      margin: 10px;
     }
 
     .tb td {
-        text-align: center;
-        margin: 10px;
-        padding-left: 40px;
-        padding-right: 40px;
+      text-align: center;
+      margin: 10px;
+      padding-left: 40px;
+      padding-right: 40px;
     }
 
-    .rev{
+    .rev {
       margin: 70px;
     }
-
   </style>
 
 </head>
 
-<body>
+<body class="bg-[#faf9f6]">
   <section id="header">
     <a href="index.php"><img src="img/lg.png" class="logo" alt="" /></a>
 
@@ -148,104 +122,101 @@ if (isset($_GET['nw'])) {
   </section>
 
   <?php
-  include("include/connect.php");
+    include("include/connect.php");
 
-  if (isset($_GET['pid'])) {
-    $pid = $_GET['pid'];
-    $query = "SELECT* FROM PRODUCTS WHERE pid = $pid";
+    if (isset($_GET['pid'])) {
+        $pid = $_GET['pid'];
+        $query = "SELECT * FROM PRODUCTS WHERE pid = $pid";
 
-    $result = mysqli_query($con, $query);
-    $row = mysqli_fetch_assoc($result);
+        $result = mysqli_query($con, $query);
+        $row = mysqli_fetch_assoc($result);
 
-    $pidd = $row['pid'];
-    $pname = $row['pname'];
+        $pname = $row['pname'];
+        $desc = $row['description'];
+        $qty = $row['qtyavail'];
+        $price = $row['price'];
+        $cat = $row['category'];
+        $img = $row['img'];
+        $brand = $row['brand'];
+    }
+    ?>
 
-    $desc = $row['description'];
-    $qty = $row['qtyavail'];
-    $price = $row['price'];
-    $cat = $row['category'];
-    $img = $row['img'];
-    $brand = $row['brand'];
-
-    $aid = $_SESSION['aid'];
-    $query = "select * from wishlist where aid = $aid and pid = $pid";
-    $result = mysqli_query($con, $query);
-    $row = mysqli_fetch_assoc($result);
-
-
-    echo "
-      <section id='prodetails' class='section-p1'>
-        <div class='single-pro-image'>
-          <img src='product_images/$img' width='100%' id='MainImg' alt=' ' />
+    <!-- Product Details Section -->
+    <div class="container mx-auto px-4 py-10 grid md:grid-cols-2 gap-10">
+        <!-- Product Image -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <img 
+                src="product_images/<?php echo $img; ?>" 
+                alt="<?php echo $pname; ?>" 
+                class="w-full h-96 object-cover rounded-lg"
+                id="MainImg"
+            >
         </div>
-        <div class='single-pro-details'>
-        
-          <h2>$pname</h2>
-          <h4>$cat - $brand</h4>
-          <h4>₱$price</h4>
-          <form method='post'>
-          <input type='number' name='qty' value='1' min='1' max='$qty'/>
-          <button class='normal' name='submit'>Add to Cart</button>";
 
-    if ($row)
+        <!-- Product Information -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4"><?php echo $pname; ?></h1>
+            
+            <div class="flex items-center mb-4">
+                <span class="text-xl font-semibold text-[#222] mr-4">₱<?php echo number_format($price, 2); ?></span>
+            </div>
 
-      echo "<a class ='heart' href='sproduct.php?w=$pid'><img src='img/empty.png' style='
-            margin: auto; ' width='40px' height='40px'  alt=' ' /></a>";
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Product Details</h3>
+                <p class="text-gray-600"><?php echo $desc; ?></p>
+            </div>
 
-            echo "
+            <div class="mb-6">
+                <p class="text-sm text-gray-500">
+                    <span class="font-semibold">Category:</span> <?php echo $cat; ?>
+                </p>
+                <p class="text-sm text-gray-500">
+                    <span class="font-semibold">Brand:</span> <?php echo $brand; ?>
+                </p>
+                <p class="text-sm text-gray-500">
+                    <span class="font-semibold">Availability:</span> 
+                    <?php 
+                    echo $qty > 0 
+                        ? "<span class='text-green-600'>In Stock (" . $qty . " available)</span>" 
+                        : "<span class='text-red-600'>Out of Stock</span>"; 
+                    ?>
+                </p>
+            </div>
+
+            <!-- Add to Cart Form -->
+            <form method="post" class="space-y-4">
+                <div class="flex items-center space-x-4">
+                    <label for="qty" class="text-gray-700">Quantity:</label>
+                    <input 
+                        type="number" 
+                        name="qty" 
+                        value="1" 
+                        min="1" 
+                        max="<?php echo $qty; ?>"
+                        class="w-20 border rounded px-2 py-1"
+                    >
+                </div>
+
+                <button 
+                    type="submit" 
+                    name="submit" 
+                    <?php echo $qty <= 0 ? 'disabled' : ''; ?>
+                    class="
+                        w-full 
+                        bg-[#222] 
+                        text-white 
+                        py-2 
+                        rounded 
+                        hover:bg-gray-700 
+                        transition 
+                        <?php echo $qty <= 0 ? 'opacity-50 cursor-not-allowed' : ''; ?>
+                    "
+                >
+                    <?php echo $qty <= 0 ? 'Out of Stock' : 'Add to Cart'; ?>
+                </button>
             </form>
-            <h4>Product Details</h4>
-            <span>$desc
-            </span>";
-
-   
-
-  echo "</div></section>";
-}
-
-$query = "select * from reviews join orders on reviews.oid = orders.oid join accounts on orders.aid = accounts.aid where reviews.pid = $pid";
-$result = mysqli_query($con, $query);
-
-$row = mysqli_fetch_assoc($result);
-
-if (!empty($row))
-{
-  $result = mysqli_query($con, $query);
-
-echo "
-<div class = 'rev'>
-<h2>Reviews</h2>
-<div class='tb'>
-<table><thead><tr><th>username</th>
-<th style='min-width: 100px;'>rating</th>
-<th>text</th></thead><tbody>";
-
-while ($row = mysqli_fetch_assoc($result)) {
-  $user = $row['username'];
-  $rtext = $row['rtext'];
-  $stars = $row['rating'];
-
-  $empty = 5 - $stars;
-
-  echo "<tr><td>$user</td>
-           
-            <td style='min-width: 200px;'><div class='star' >";
-  for ($i = 1; $i <= $stars; $i++) {
-    echo "<i class='fas fa-star'></i>";
-
-  }
-  for ($i = 1; $i <= $empty; $i++) {
-    echo "<i class='far fa-star'></i>";
-
-  }
-  echo "</div></td>
-            <td><span>$rtext<span></td></tr>";
-}
-
-echo "</tbody></table></div></div>";
-
-}
-  ?>
+        </div>
+    </div>
 
 
   <footer class="section-p1">
@@ -253,7 +224,7 @@ echo "</tbody></table></div></div>";
       <img class="logo" src="img/lg.png" />
       <h4>Contact</h4>
       <p>
-        <strong>Address: </strong> Street 2, Johar Town Block A,Lahore
+      <strong>Email: </strong> mytechpc@gmail.com
 
       </p>
       <p>
@@ -269,7 +240,7 @@ echo "</tbody></table></div></div>";
       <a href="cart.php">View Cart</a>
     </div>
     <div class="copyright">
-      <p>2023. MytechPC</p>
+    <p>Copyright © 2023 My Tech Pc</p>
     </div>
   </footer>
 
@@ -277,16 +248,16 @@ echo "</tbody></table></div></div>";
     var MainImg = document.getElementById("MainImg");
     var smallimg = document.getElementsByClassName("small-img");
 
-    smallimg[0].onclick = function () {
+    smallimg[0].onclick = function() {
       MainImg.src = smallimg[0].src;
     };
-    smallimg[1].onclick = function () {
+    smallimg[1].onclick = function() {
       MainImg.src = smallimg[1].src;
     };
-    smallimg[2].onclick = function () {
+    smallimg[2].onclick = function() {
       MainImg.src = smallimg[2].src;
     };
-    smallimg[3].onclick = function () {
+    smallimg[3].onclick = function() {
       MainImg.src = smallimg[3].src;
     };
   </script>
@@ -296,10 +267,10 @@ echo "</tbody></table></div></div>";
 </html>
 
 <script>
-    window.addEventListener("unload", function () {
-      // Call a PHP script to log out the user
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", "logout.php", false);
-      xhr.send();
-    });
-  </script>
+  window.addEventListener("unload", function() {
+    // Call a PHP script to log out the user
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "logout.php", false);
+    xhr.send();
+  });
+</script>

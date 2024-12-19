@@ -18,6 +18,16 @@ session_start();
     
 
     <style>
+    @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+    }
+
+    .animate-wiggle {
+        animation: wiggle 0.3s ease-in-out infinite;
+    }
+
     .search-container {
         display: flex;
         align-items: center;
@@ -219,15 +229,52 @@ session_start();
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <?php
+            function getProductNewBadge($dateCreated) {
+                $currentDate = new DateTime();
+                $productDate = new DateTime($dateCreated);
+                
+                $interval = $currentDate->diff($productDate);
+                
+                if ($interval->days == 0) {
+                    return [
+                        'text' => 'New',
+                        'class' => 'bg-green-500 text-white animate-pulse'
+                    ];
+                } elseif ($interval->days == 1) {
+                    return [
+                        'text' => 'New',
+                        'class' => 'bg-blue-500 text-white animate-bounce'
+                    ];
+                } elseif ($interval->days == 2) {
+                    return [
+                        'text' => 'Recent',
+                        'class' => 'bg-yellow-500 text-white animate-wiggle'
+                    ];
+                }
+                
+                return null;
+            }
+
             while ($row = mysqli_fetch_assoc($result)) {
                 $pid = $row['pid'];
                 $pname = $row['pname'];
                 $brand = $row['brand'];
                 $price = $row['price'];
                 $img = $row['img'];
-            ?>
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 animate-product">
-                    <img 
+                $newBadge = getProductNewBadge($row['date_created']);
+            ?>                
+
+                <div class="bg-white mt-8 rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 animate-product">
+                <div class="relative">
+            <?php if ($newBadge): ?>
+                <div class="absolute top-2 right-2 z-10">
+                    <span class="<?php echo $newBadge['class']; ?> text-xs font-bold px-2 py-1 rounded-full">
+                        <?php echo $newBadge['text']; ?>
+                    </span>
+                </div>
+            <?php endif; ?>
+            </div>
+                <img 
                         src="product_images/<?php echo $img; ?>" 
                         alt="<?php echo $pname; ?>" 
                         class="w-full h-48 object-cover"
