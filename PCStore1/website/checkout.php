@@ -72,10 +72,10 @@ if (isset($_POST['sub'])) {
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyTechPC</title>
+    <title>MyTechPC | Checkout</title>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css" />
 
     <style>
@@ -113,7 +113,7 @@ if (isset($_POST['sub'])) {
 
 </head>
 
-<body>
+<body class="bg-[#faf9f6]">
     <section id="header">
         <a href="index.php"><img src="img/lg.png" class="logo" alt="" /></a>
 
@@ -146,79 +146,120 @@ if (isset($_POST['sub'])) {
         </div>
     </section>
 
-    <div class="container">
-        <div class="titlecheck">
-            <h2>Product Order Form</h2>
-        </div>
-        <div class="d-flex">
-            <form method="post" id="form1">
-
-                <h3 style="color: darkred; margin: auto"></h3>
-                <input class="input11" type="text" name="houseadd" placeholder="Address" required>
-                <input class="input11" type="text" name="city" placeholder="City" required>
-                <input class="input11" type="text" name="country" placeholder="County/State" required>
-                <div>
-                    <input class="input2" type="radio" id="ac1" name="dbt" value="cod" onchange="showInputBox()"> Cash
-                    on Delivery
-                </div>
-                <button name="sub" type="submit" class="btn112">Place Order</button>
-            </form>
-            <div class="Yorder">
-                <table class="table12">
-                    <tr class='tr1'>
-                        <th class='th1' colspan='2'>Your order</th>
-                    </tr>
-
-                    <?php
-                    include("include/connect.php");
-
-                    $aid = $_SESSION['aid'];
-
-                    $query = "SELECT * FROM cart JOIN products ON cart.pid = products.pid WHERE aid = $aid";
-
-                    $result = mysqli_query($con, $query);
-
-                    global $tot;
-
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        $pid = $row['pid'];
-                        $pname = $row['pname'];
-                        $desc = $row['description'];
-                        $qty = $row['qtyavail'];
-                        $price = $row['price'];
-                        $cat = $row['category'];
-                        $img = $row['img'];
-                        $brand = $row['brand'];
-                        $cqty = $row['cqty'];
-                        $a = $price * $cqty;
-                        $tot += $a;
-
-                        echo "
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Checkout</h2>
             
-            <tr class='tr1'>
-              <td class='td1'>$pname x $cqty(Qty)</td>
-              <td class='td1'>₱$a</td>
-            </tr>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Order Summary -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-6">Order Summary</h3>
+                    <div class="space-y-4">
+                        <?php
+                        include("include/connect.php");
+                        $aid = $_SESSION['aid'];
+                        $query = "SELECT * FROM cart JOIN products ON cart.pid = products.pid WHERE aid = $aid";
+                        $result = mysqli_query($con, $query);
+                        global $tot;
 
-              ";
-                    }
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $pid = $row['pid'];
+                            $pname = $row['pname'];
+                            $price = $row['price'];
+                            $cqty = $row['cqty'];
+                            $a = $price * $cqty;
+                            $tot += $a;
+                            
+                            echo "
+                            <div class='flex justify-between py-2 border-b'>
+                                <div class='text-gray-600'>
+                                    <span class='font-medium'>$pname</span>
+                                    <span class='text-sm'> × $cqty</span>
+                                </div>
+                                <span class='font-medium'>₱$a</span>
+                            </div>";
+                        }
 
-                    $tot += 250;
+                        $tot += 250;
+                        
+                        echo "
+                        <div class='flex justify-between py-2'>
+                            <span class='text-gray-600'>Subtotal</span>
+                            <span class='font-medium'>₱$tot.00</span>
+                        </div>
+                        <div class='flex justify-between py-2 border-b'>
+                            <span class='text-gray-600'>Handling Fee (Metro Manila)</span>
+                            <span class='font-medium'>₱250</span>
+                        </div>
+                        <div class='flex justify-between py-2 text-lg font-bold'>
+                            <span>Total</span>
+                            <span>₱$tot</span>
+                        </div>";
+                        ?>
+                    </div>
+                </div>
 
-                    echo "
-            <tr class='tr1'>
-            <td class='td1'>Subtotal</td>
-            <td class='td1'>₱$tot.00</td>
-          </tr>
-          <tr class='tr1'>
-            <td class='td1'>Handling Fee (Within Metro Manila)</td>
-            <td class='td1'>₱250</td>
-          </tr>";
-                    ?>
+                <!-- Shipping Form -->
+                <div class="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
+                    <h3 class="text-2xl font-semibold mb-8 text-gray-900 border-b pb-4">Shipping Details</h3>
+                    <form method="post" id="form1" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">Address</label>
+                            <input 
+                                type="text" 
+                                name="houseadd" 
+                                required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+                                placeholder="Enter your complete address"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">City</label>
+                            <input 
+                                type="text" 
+                                name="city" 
+                                required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+                                placeholder="Enter your city"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">County/State</label>
+                            <input 
+                                type="text" 
+                                name="country" 
+                                required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+                                placeholder="Enter your county/state"
+                            >
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="text-lg font-semibold mb-4 text-gray-900">Payment Method</h4>
+                            <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition duration-200">
+                                <input 
+                                    type="radio" 
+                                    id="ac1" 
+                                    name="dbt" 
+                                    value="cod" 
+                                    onchange="showInputBox()"
+                                    class="h-5 w-5 text-blue-600 focus:ring-blue-400"
+                                    checked
+                                >
+                                <span class="text-gray-800 font-medium">Cash on Delivery</span>
+                            </label>
+                        </div>
 
-
-                </table><br>
-            </div><!-- Yorder -->
+                        <button 
+                            name="sub" 
+                            type="submit" 
+                            class="w-full bg-blue-600 text-white py-4 px-6 rounded-lg hover:bg-blue-700 transition duration-300 mt-8 font-semibold text-lg shadow-md hover:shadow-lg"
+                        >
+                            Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
