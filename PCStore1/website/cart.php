@@ -66,16 +66,16 @@ if (isset($_POST['check'])) {
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyTechPC</title>
+    <title>MyTechPC | Cart</title>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css" />
 
 
 </head>
 
-<body onload="totala()">
+<body class="bg-[#f8f7f4]" onload="totala()">
     <section id="header">
         <a href="index.php"><img src="img/lg.png" class="logo" alt="" /></a>
 
@@ -108,118 +108,106 @@ if (isset($_POST['check'])) {
         </div>
     </section>
 
-    <section id="cart" class="section-p1">
-        <table width="100%">
-            <thead>
-                <tr>
-                    <td>Remove</td>
-                    <td>Image</td>
-                    <td>Product</td>
-                    <td>Price</td>
-                    <td>Quantity</td>
-                    <td>Subtotal</td>
-                </tr>
-            </thead>
-            <tbody>
+    <section class="container mx-auto px-4 py-8">
+        <!-- Cart Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remove</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <?php
+                    include("include/connect.php");
+                    $aid = $_SESSION['aid'];
+                    $query = "SELECT * FROM cart JOIN products ON cart.pid = products.pid WHERE aid = $aid";
+                    $result = mysqli_query($con, $query);
 
-                <?php
-
-                include("include/connect.php");
-
-                $aid = $_SESSION['aid'];
-
-                $query = "SELECT * FROM cart JOIN products ON cart.pid = products.pid WHERE aid = $aid";
-
-                $result = mysqli_query($con, $query);
-
-
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $pid = $row['pid'];
-                    $pname = $row['pname'];
-                    $desc = $row['description'];
-                    $qty = $row['qtyavail'];
-                    $price = $row['price'];
-                    $cat = $row['category'];
-                    $img = $row['img'];
-                    $brand = $row['brand'];
-                    $cqty = $row['cqty'];
-                    $a = $price * $cqty;
-                    $total = $a + 250;
-                    echo "
-
-            <tr>
-              <td>
-                <a href='cart.php?re=$pid'><i class='far fa-times-circle'></i></a>
-              </td>
-              <td><img src='product_images/$img' alt='' /></td>
-              <td>$pname</td>
-              <td class='pr'>₱$price</td>
-              <td><input type='number' class = 'aqt' value='$cqty' min = '1' max = '$qty' onchange='subprice()' /></td>
-              <td class = 'atd'>₱$a</td>
-            </tr>
-            ";
-                }
-                ?>
-
-            </tbody>
-        </table>
-    </section>
-
-    <section id="cart-add" class="section-p1">
-        <div id="coupon">
-
-        </div>
-        <div id="subtotal">
-            <h3>Cart Totals</h3>
-            <table>
-                <tr>
-                    <td>Cart Subtotal</td>
-                    <td id='tot1' onload="totala()">₱</td>
-                </tr>
-                <tr>
-                    <td>Handling Fee (Within Metro Manila)</td>
-                    <td>₱250</td>
-                </tr>
-                <tr>
-                    <td><strong>Total</strong></td>
-                    <td id='tot' onload="totala()"><strong>₱</strong></td>
-                </tr>
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $pid = $row['pid'];
+                        $pname = $row['pname'];
+                        $desc = $row['description'];
+                        $qty = $row['qtyavail'];
+                        $price = $row['price'];
+                        $cat = $row['category'];
+                        $img = $row['img'];
+                        $brand = $row['brand'];
+                        $cqty = $row['cqty'];
+                        $a = $price * $cqty;
+                        $total = $a + 250;
+                        echo "
+                        <tr class='hover:bg-gray-50'>
+                            <td class='px-6 py-4 whitespace-nowrap'>
+                                <a href='cart.php?re=$pid' class='text-red-500 hover:text-red-700'>
+                                    <i class='far fa-times-circle text-xl'></i>
+                                </a>
+                            </td>
+                            <td class='px-6 py-4 whitespace-nowrap'>
+                                <img src='product_images/$img' alt='$pname' class='h-20 w-20 object-cover rounded-lg'/>
+                            </td>
+                            <td class='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>$pname</td>
+                            <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-500 pr'>₱$price</td>
+                            <td class='px-6 py-4 whitespace-nowrap'>
+                                <input type='number' class='aqt w-20 px-2 py-1 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500' 
+                                    value='$cqty' min='1' max='$qty' onchange='subprice()'/>
+                            </td>
+                            <td class='px-6 py-4 whitespace-nowrap text-sm text-gray-900 atd'>₱$a</td>
+                        </tr>
+                        ";
+                    }
+                    ?>
+                </tbody>
             </table>
+        </div>
 
-            <form method="post">
-                <?php
+        <!-- Cart Summary -->
+        <div class="mt-8 grid md:grid-cols-3 gap-6">
+            <div class="md:col-span-2"></div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-4">Cart Totals</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Cart Subtotal</span>
+                        <span id="tot1" class="font-medium">₱0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Handling Fee (Within Metro Manila)</span>
+                        <span class="font-medium">₱250</span>
+                    </div>
+                    <div class="flex justify-between border-t pt-3">
+                        <span class="text-gray-900 font-semibold">Total</span>
+                        <span id="tot" class="text-gray-900 font-semibold">₱0</span>
+                    </div>
+                </div>
 
-                include("include/connect.php");
+                <form method="post" class="mt-6">
+                    <?php
+                    include("include/connect.php");
+                    $aid = $_SESSION['aid'];
+                    $query = "SELECT * FROM cart JOIN products ON cart.pid = products.pid WHERE aid = $aid";
+                    $result = mysqli_query($con, $query);
 
-                $aid = $_SESSION['aid'];
-
-                $query = "SELECT * FROM cart JOIN products ON cart.pid = products.pid WHERE aid = $aid";
-
-                $result = mysqli_query($con, $query);
-
-
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $pid = $row['pid'];
-                    $pname = $row['pname'];
-                    $desc = $row['description'];
-                    $qty = $row['qtyavail'];
-                    $price = $row['price'];
-                    $cat = $row['category'];
-                    $img = $row['img'];
-                    $brand = $row['brand'];
-                    $cqty = $row['cqty'];
-                    $a = $price * $cqty;
-                    $total = $a + 250;
-                    echo "
-
-              <input style='display: none;' name='$pid-p' class='inp' type = 'number' value = '$pid'/>
-              <input style='display: none;' name='$pid-qt' class='inq' type = 'number' value = '$cqty'/>
-              ";
-                }
-                ?>
-                <button class="normal" name="check">Proceed to checkout</button>
-            </form>
-            </a>
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $pid = $row['pid'];
+                        $cqty = $row['cqty'];
+                        echo "
+                        <input type='hidden' name='$pid-p' class='inp' value='$pid'/>
+                        <input type='hidden' name='$pid-qt' class='inq' value='$cqty'/>
+                        ";
+                    }
+                    ?>
+                    <button type="submit" name="check" 
+                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">
+                        Proceed to checkout
+                    </button>
+                </form>
+            </div>
         </div>
     </section>
 
