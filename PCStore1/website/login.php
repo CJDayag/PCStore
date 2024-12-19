@@ -37,15 +37,15 @@ if (isset($_POST['submit'])) {
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyTechPC</title>
+    <title>MyTechPC | Login</title>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css" />
 
 </head>
 
-<body>
+<body class="bg-[#f8f7f4]">
     <section id="header">
         <a href="#"><img src="img/lg.png" class="logo" alt="" /></a>
 
@@ -69,17 +69,44 @@ if (isset($_POST['submit'])) {
     </section>
 
 
-    <form method="post" id="form">
-        <h3 style="color: darkred; margin: auto"></h3>
-        <input class="input1" id="user" name="username" type="text" placeholder="Username *">
-        <input class="input1" id="pass" name="password" type="password" placeholder="Password *"> 
-        <button type="submit" class="btn" name="submit">login</button>
-        <div class="link forget-pass text-left"><a href="forgot-password.php">Forgot password?</a></div>
+    <div class="container mx-auto px-4 py-8 flex items-center justify-center min-h-[calc(100vh-200px)]">
+        <div class="w-full max-w-md">
+            <form method="post" id="form" class="bg-[#fdfdfd] p-8 rounded-lg shadow-md">
+                <h3 class="text-gray-800 text-2xl font-bold text-center mb-6">Login</h3>
+                <div class="space-y-4">
+                    <input 
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" 
+                        id="user" 
+                        name="username" 
+                        type="text" 
+                        placeholder="Username *"
+                        required
+                    >
+                    <input 
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" 
+                        id="pass" 
+                        name="password" 
+                        type="password" 
+                        placeholder="Password *"
+                        required
+                    >
+                    <button 
+                        type="submit" 
+                        class="w-full bg-[#222] text-white py-2 rounded-lg hover:bg-[#333] transition duration-200"
+                        name="submit"
+                    >
+                        Login
+                    </button>
+                    <div class="text-left">
+                        <a href="forgot-password.php" class="text-[#222] hover:underline">Forgot password?</a>
+                    </div>
+                </div>
+            </form>
 
-    </form>
-
-    <div class="sign">
-        <a href="signup.php" class="signn">Do not have an account?</a>
+            <div class="text-center mt-4">
+                <a href="signup.php" class="text-[#222] hover:underline">Do not have an account?</a>
+            </div>
+        </div>
     </div>
 
 
