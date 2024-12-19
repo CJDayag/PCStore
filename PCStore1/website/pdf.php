@@ -14,112 +14,122 @@ if (isset($_GET['oid'])) {
 
         // Check if data is retrieved
         if ($oid) {
-			class PDF extends FPDF {
-				function Header() {
-					$this->SetFont('Arial', 'B', 15);
-					$this->Cell(12);
-			
-					$this->Image('img/lg.png',85,10,45,35);
-			
-					$this->Ln(5);
-				}
-			}
-			
-			$pdf = new PDF('P', 'mm', 'A4');
-			
-			$pdf->AddPage();
-			$pdf->SetFont('Arial', 'B', 14);
-			
-			$pdf->Cell(130, 55, 'MyTechPC', 0, 0);
-			$pdf->Cell(59, 55,'Order Reciept',0,1);
-			
-			$pdf->SetFont('Arial','',12);
-			
-			$pdf->Cell(130, 5, '[Street Address]', 0, 0);
-			$pdf->Cell(59, 5, '', 0, 1);
-			
-			$pdf->Cell(130, 5, 'Metro Manila, Philippines', 0, 0);
-			$pdf->Cell(25, 5,'Date', 0, 0);
-			$pdf->Cell(34, 5,date('d/m/Y') ,0,1);
-			
-			$pdf->Cell(130, 5, 'Phone: 09355498379', 0, 0);
-			$pdf->Cell(25,5,'Account ID: ', 0,0);
-			$pdf->Cell(34, 5,$oid['aid'],0,1);
-			
-			$pdf->Cell(189, 10,'',0,1);
-			
-			$pdf->Cell(100, 5, 'Billing to', 0, 1);
-			
-			$pdf->Cell(10, 5, '', 0 , 0);
-			$pdf->Cell(13, 5, 'Name: ', 0, 0 );
-			$pdf->Cell(13, 5, $oid['afname'], 0, 0);
-			$pdf->Cell(90, 5, $oid['alname'], 0, 1);
-			
-			$pdf->Cell(10,5,'', 0, 0);
-			$pdf->Cell(18, 5, 'Address: ', 0, 0);
-			$pdf->Cell(90, 5, $oid['address'], 0, 1);
+            class PDF extends FPDF {
+                function Header() {
+                    // Tailwind-inspired styling
+                    $this->SetFont('Arial', 'B', 15);
+                    $this->SetTextColor(31, 41, 55); // Gray-800
+                    $this->Cell(0, 10, 'MyTechPC - Official Receipt', 0, 1, 'C');
+                    
+                    // Logo
+                    $this->Image('img/lg.png', 10, 10, 30);
+                    
+                    $this->Ln(15);
+                }
 
-			$pdf->Cell(10,5,'', 0, 0);
-			$pdf->Cell(10,5,'City: ', 0, 0);
-			$pdf->Cell(10,5,$oid['city'], 0, 1);
-			
-			$pdf->Cell(10, 5, '', 0, 0);
-			$pdf->Cell(18, 5, 'Order ID: ', 0, 0);
-			$pdf->Cell(90, 5, $oid['oid'], 0, 1);
-			
-			$pdf->Cell(10, 5, '', 0, 0);
-			$pdf->Cell(14, 5, 'Phone: ', 0, 0);
-			$pdf->Cell(90, 5, $oid['phone'], 0, 1);
+                function Footer() {
+                    // Tailwind-inspired footer
+                    $this->SetY(-15);
+                    $this->SetFont('Arial', 'I', 8);
+                    $this->SetTextColor(107, 114, 128); // Gray-500
+                    $this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
+                }
 
-			$pdf->Cell(10,5,'', 0, 0);
-			$pdf->Cell(12,5,'Email: ', 0, 0);
-			$pdf->Cell(90,5,$oid['email'], 0, 0);
-			$pdf->Cell(10,10,'', 0, 1);
+                function SectionHeader($text) {
+                    $this->SetFont('Arial', 'B', 12);
+                    $this->SetTextColor(17, 24, 39); // Gray-900
+                    $this->Cell(0, 10, $text, 0, 1, 'L');
+                    $this->SetDrawColor(209, 213, 219); // Gray-300
+                    $this->Line($this->GetX(), $this->GetY(), $this->GetX() + 190, $this->GetY());
+                    $this->Ln(5);
+                }
+            }
+            
+            $pdf = new PDF('P', 'mm', 'A4');
+            $pdf->AliasNbPages();
+            $pdf->AddPage();
+            
+            // Company Information
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->SetTextColor(55, 65, 81); // Gray-700
+            $pdf->Cell(0, 6, 'MyTechPC', 0, 1);
+            $pdf->Cell(0, 6, 'Metro Manila, Philippines', 0, 1);
+            $pdf->Cell(0, 6, 'Contact: 09355498379', 0, 1);
+            $pdf->Cell(0, 6, 'Email: mytechpc@gmail.com', 0, 1);
+            $pdf->Ln(10);
 
-			$pdf->SetFont('Arial', 'B', 12);
-			$pdf->Cell(155, 5, 'Product', 1, 0);
-			$pdf->Cell(34, 5,  'Amount', 1, 1);
+            // Order Details Section
+            $pdf->SectionHeader('Order Information');
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(60, 7, 'Order ID:', 0, 0);
+            $pdf->Cell(0, 7, $oid['oid'], 0, 1);
+            $pdf->Cell(60, 7, 'Order Date:', 0, 0);
+            $pdf->Cell(0, 7, $oid['dateod'], 0, 1);
+            $pdf->Cell(60, 7, 'Delivery Status:', 0, 0);
+            $pdf->Cell(0, 7, $oid['datedel'] ?? 'Pending', 0, 1);
+            $pdf->Ln(5);
 
-			$pdf->SetFont('Arial', '', 12);
+            // Customer Information Section
+            $pdf->SectionHeader('Customer Details');
+            $pdf->Cell(60, 7, 'Name:', 0, 0);
+            $pdf->Cell(0, 7, $oid['afname'] . ' ' . $oid['alname'], 0, 1);
+            $pdf->Cell(60, 7, 'Email:', 0, 0);
+            $pdf->Cell(0, 7, $oid['email'], 0, 1);
+            $pdf->Cell(60, 7, 'Phone:', 0, 0);
+            $pdf->Cell(0, 7, $oid['phone'], 0, 1);
+            $pdf->Cell(60, 7, 'Address:', 0, 0);
+            $pdf->Cell(0, 7, $oid['address'], 0, 1);
+            $pdf->Ln(5);
 
-			$productQuery = mysqli_query($con, "SELECT * FROM `order-details` INNER JOIN products ON `order-details`.pid = products.pid WHERE `order-details`.oid = '".$oid['oid']."'");
-            $amount = 0;
+            // Product Details Section
+            $pdf->SectionHeader('Product Details');
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->SetFillColor(243, 244, 246); // Gray-100
+            $pdf->Cell(130, 7, 'Product', 1, 0, 'C', true);
+            $pdf->Cell(30, 7, 'Quantity', 1, 0, 'C', true);
+            $pdf->Cell(30, 7, 'Price', 1, 1, 'C', true);
+
+            $pdf->SetFont('Arial', '', 10);
+            $productQuery = mysqli_query($con, "SELECT * FROM `order-details` INNER JOIN products ON `order-details`.pid = products.pid WHERE `order-details`.oid = '".$oid['oid']."'");
+            $total = 0;
 
             while ($product = mysqli_fetch_array($productQuery)) {
-                $pdf->Cell(155, 5, $product['pname'], 1, 0);
-                $pdf->Cell(34, 5, 'Php ' . number_format($product['price']), 1, 1, 'R');
-                $amount += $product['price'];
+                $subtotal = $product['price'] * $product['qty'];
+                $total += $subtotal;
+
+                $pdf->Cell(130, 7, $product['pname'], 1);
+                $pdf->Cell(30, 7, $product['qty'], 1, 0, 'C');
+                $pdf->Cell(30, 7, 'Php ' . number_format($subtotal, 2), 1, 1, 'R');
             }
 
-			$pdf->Cell(130, 5, '', 0, 0);
-			$pdf->Cell(25, 5, 'Subtotal', 0, 0);
-			$pdf->Cell(10, 5, 'Php', 1, 0);
-			$pdf->Cell(24, 5, number_format($amount), 1, 1, 'R');
+            // Total Section
+            $pdf->Ln(5);
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->Cell(160, 7, 'Subtotal', 0, 0, 'R');
+            $pdf->Cell(30, 7, 'Php ' . number_format($total, 2), 1, 1, 'R');
 
-			$pdf->Cell(130, 5, '', 0, 0);
-			$pdf->Cell(25, 5, 'HandlingFee', 0, 0);
-			$pdf->Cell(10, 5, 'Php', 1, 0);
-			$pdf->Cell(24, 5, '250', 1, 1, 'R');
+            $handlingFee = 250;
+            $pdf->Cell(160, 7, 'Handling Fee', 0, 0, 'R');
+            $pdf->Cell(30, 7, 'Php ' . number_format($handlingFee, 2), 1, 1, 'R');
 
-			$pdf->Cell(130, 5, '', 0, 0);
-			$pdf->Cell(25, 5, 'Total Due', 0, 0);
-			$pdf->Cell(10, 5, 'Php', 1, 0);
-			$pdf->Cell(24, 5, number_format($amount + 250), 1, 1, 'R');
+            $grandTotal = $total + $handlingFee;
+            $pdf->Cell(160, 7, 'Total', 0, 0, 'R');
+            $pdf->Cell(30, 7, 'Php ' . number_format($grandTotal, 2), 1, 1, 'R');
 
-			
-			$pdf->Output();
+            // Thank You Note
+            $pdf->Ln(10);
+            $pdf->SetFont('Arial', 'I', 10);
+            $pdf->SetTextColor(107, 114, 128); // Gray-500
+            $pdf->Cell(0, 7, 'Thank you for your purchase!', 0, 1, 'C');
+            
+            $pdf->Output();
         } else {
-            // Handle the case where no data is retrieved
-            echo "No data found for Account ID: ".$_GET['oid'];
+            echo "No data found for Order ID: ".$_GET['oid'];
         }
     } else {
-        // Handle the case where the query fails
         echo "Query failed: ".mysqli_error($con);
     }
 } else {
-    // Handle the case where $_GET['aid'] is not set
-    echo "Account ID not set.";
+    echo "Order ID not set.";
 }
-
-
 ?>
