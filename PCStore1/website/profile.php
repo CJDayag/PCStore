@@ -281,53 +281,76 @@ if($_SESSION['aid'] > 0) {
 
                 <!-- Order History -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-2xl font-bold mb-6">Order History</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="bg-gray-50">
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Ordered</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <?php
-                                include("include/connect.php");
-                                $aid = $_SESSION['aid'];
-                                $query = "SELECT * FROM orders WHERE aid = $aid ORDER BY dateod DESC";
-                                $result = mysqli_query($con, $query);
-                                
-                                while ($row = mysqli_fetch_assoc($result)) {
-                                    $oid = $row['oid'];
-                                    $dateod = $row['dateod'];
-                                    $status = empty($row['datedel']) ? 'Pending' : 'Delivered';
-                                    $total = $row['total'] + 250; // Adding delivery fee
-                                    
-                                    echo "<tr class='hover:bg-gray-50'>
-                                        <td class='px-6 py-4 whitespace-nowrap'>#$oid</td>
-                                        <td class='px-6 py-4 whitespace-nowrap'>$dateod</td>
-                                        <td class='px-6 py-4 whitespace-nowrap'>
-                                            <span class='px-2 inline-flex text-xs leading-5 font-semibold rounded-full " . 
-                                            ($status == 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800') . 
-                                            "'>$status</span>
-                                        </td>
-                                        <td class='px-6 py-4 whitespace-nowrap'>₱$total</td>
-                                        <td class='px-6 py-4 whitespace-nowrap'>
-                                            <a href='pdf.php?oid=$oid' target='_blank' 
-                                               class='text-blue-600 hover:text-blue-900'>
-                                                View Receipt
-                                            </a>
-                                        </td>
-                                    </tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
+                <h2 class="text-2xl font-bold mb-6">Order History</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Ordered</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                        <?php
+                        include("include/connect.php");
+                        $aid = $_SESSION['aid'];
+                        $query = "SELECT * FROM orders WHERE aid = $aid ORDER BY dateod DESC";
+                        $result = mysqli_query($con, $query);
+
+                        // Define possible status options and their styling
+                        $statusOptions = [
+                            'Order pending' => 'bg-yellow-100 text-yellow-800',
+                            'Order processed' => 'bg-blue-100 text-blue-800',
+                            'Order delivered' => 'bg-green-100 text-green-800',
+                            'Order cancelled' => 'bg-red-100 text-red-800',
+                        ];
+
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $oid = $row['oid'];
+                            $dateod = $row['dateod'];
+                            
+                            // Use the actual datedel value if it exists, otherwise default to 'Order pending'
+                            $status = !empty($row['datedel']) ? $row['datedel'] : 'Order pending';
+                            
+                            // Ensure the status is one of the defined options
+                            $status = in_array($status, array_keys($statusOptions)) ? $status : 'Order pending';
+                            
+                            // Calculate total with delivery fee
+                            $total = $row['total'] + 250; // Adding delivery fee
+                            
+                            // Get the appropriate status color
+                            $statusColor = $statusOptions[$status];
+                        ?>
+                            <tr class='hover:bg-gray-50'>
+                                <td class='px-6 py-4 whitespace-nowrap'>#<?php echo $oid; ?></td>
+                                <td class='px-6 py-4 whitespace-nowrap'><?php echo $dateod; ?></td>
+                                <td class='px-6 py-4 whitespace-nowrap'>
+                                    <span class='px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?php echo $statusColor; ?>'>
+                                        <?php echo $status; ?>
+                                    </span>
+                                </td>
+                                <td class='px-6 py-4 whitespace-nowrap'>₱<?php echo $total; ?></td>
+                                <td class='px-6 py-4 whitespace-nowrap'>
+                                    <?php if ($status === 'Order cancelled'): ?>
+                                        <span class='text-gray-400 cursor-not-allowed'>
+                                            View Receipt
+                                        </span>
+                                    <?php else: ?>
+                                        <a href='pdf.php?oid=<?php echo $oid; ?>' target='_blank' 
+                                        class='text-blue-600 hover:underline mr-2'>
+                                            View Receipt
+                                        </a>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
             </div>
         </div>
     </div>

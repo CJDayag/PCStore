@@ -707,7 +707,7 @@ if (isset($_GET['odd'])) {
                                 echo '<td class="px-6 py-4 whitespace-nowrap">₱' . number_format($orderRow['total'], 2) . '</td>';
                                 echo '<td class="px-6 py-4 whitespace-nowrap">' . htmlspecialchars($orderRow['datedel']) . '</td>';
                                 echo '<td class="px-6 py-4 whitespace-nowrap">
-                                        <a href="view_order.php?id=' . $orderRow['oid'] . '" class="text-blue-600 hover:text-blue-800">View</a>
+                                        <a href="view_orders.php?id=' . $orderRow['oid'] . '" class="text-blue-600 hover:text-blue-800">View</a>
                                       </td>';
                                 echo '</tr>';
                             }

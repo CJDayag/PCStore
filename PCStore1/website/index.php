@@ -17,7 +17,20 @@ if (empty($_SESSION['aid']))
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="style.css" />
-
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const stickyElement = document.querySelector('.sticky-banner');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    stickyElement.classList.add('shadow-md');
+                } else {
+                    stickyElement.classList.remove('shadow-md');
+                }
+            });
+        });
+</script>
 
 </head>
 
@@ -53,6 +66,21 @@ if (empty($_SESSION['aid']))
             <i id="bar" class="fas fa-outdent"></i>
         </div>
     </section>
+    <div class="sticky top-0 z-50 bg-gray-100 dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-gray-100 shadow-sm">
+            <p class="flex justify-center text-sm">
+                <a href="shop.php" class="group flex items-center">
+                    <span class="mr-1 text-base leading-none">✨</span>
+                    New and Affordable Products!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" 
+                        class="ml-2 inline-flex opacity-60 transition-transform group-hover:translate-x-1" 
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+            </p>
+        </div>
+
 
     <section id="hero">
         <h2>MAKE THE WORLD</h2>

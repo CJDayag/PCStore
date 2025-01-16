@@ -90,7 +90,7 @@ if (isset($_GET['oid'])) {
             $pdf->Cell(30, 7, 'Price', 1, 1, 'C', true);
 
             $pdf->SetFont('Arial', '', 10);
-            $productQuery = mysqli_query($con, "SELECT * FROM `order-details` INNER JOIN products ON `order-details`.pid = products.pid WHERE `order-details`.oid = '".$oid['oid']."'");
+            $productQuery = mysqli_query($con, "SELECT * FROM order_details INNER JOIN products ON order_details.pid = products.pid WHERE order_details.oid = '".$oid['oid']."'");
             $total = 0;
 
             while ($product = mysqli_fetch_array($productQuery)) {
